@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="{{url_for('static',
+            filename='images/icon.png')}}">
+        <link rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+        <link rel="stylesheet" href="{{url_for('static',
+            filename="style/style.css")}}">
+
+        <title>Navabe Bookstore</title>
+    </head>
+
+    <body>
+        <div id="app">
+
+            <nav>
+                <div class="nav-container">
+                    <div id="logo">
+                        <router-link to="/">
+                            <img src="{{url_for('static',
+                                filename='images/logo.png')}}" alt="logo">
+                        </router-link>
+                    </div>
+
+                    <ul id="icons">
+                        <li>
+                            <router-link to="/user-settings">
+                                <i class="fas fa-user"></i>
+                            </router-link>
+                        </li>
+                        <li>
+                            <router-link to="/shopping-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span id="nav-not"></span>
+                            </router-link>
+                        </li>
+                    </ul>
+                </div>
+
+            </nav>
+            <router-view></router-view>
+
+        </div>
+        
+        <script type="text/x-template" id="home">
+
+        <div class="home-container">
+
+            
+            <h1>Books</h1>
+            <!--Foctionnalité de recherche-->
+
+            <input v-model="researchWord" type="search" id="search" 
+                   placeholder ="Entrez l'auteur, le titre ou l'isbn ..." autocomplete =  "off">
+
+            <span v-if = "researchWord && result_filteringBooks.length >= 1">
+                ${result_filteringBooks.length} found book(s)
+            </span>
+
+            <!--Fenêtre modale pour les infos plus détaillés sur les livres-->
+            <div v-if ="modalWin" class="modal-bloc">
+                <div @click="modalWin = !modalWin" class="overlay">
+
+                </div>
+
+                <div class ="modal card">
+                    <button @click="modalWin = !modalWin" class ="btn-modal btn btn-danger">X</button>
+
+                    <div class="img-container">
+                        <img class= "modal-img" v-bind:src="currentBook.img_url" alt="image of book">
+                    </div>
+                    <div class="modal-book-description">
+                        <h3 translate='no'>${currentBook.titre}</h3>
+                        <h5>by ${currentBook.auteur}</h5>
+                        <span>
+                            <h5>Category</h5>
+                            <p>${currentBook.categorie}</p>
+                            <h5 class="synopsis">Sypnosis</h5>
+                            <p class ="scrollable-content">${currentBook.synopsis}</p>
+                        </span>
+                        <div class ="modal-icons">
+
+                            <button translate='no' disabled>
+                                <i class="icd fa fa-landmark"></i>   
+                                <p>${currentBook.editeur}</p>
+                            </button>
+
+                            <button disabled>
+                                <i class="icd fa fa-barcode"></i>
+                                <p>${currentBook.isbn}</p>
+                            </button>
+
+                            <button disabled>
+                                <i class="icd fa fa-credit-card"></i>
+                                <p>${currentBook.prix} $CA</p>
+                            </button>
+
+                            <button disabled>
+                                <i class="icd fa fa-calendar"></i>
+                                <p>${currentBook.parution}</p>
+                            </button>
+                            
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!--Affichage de catalogues-->
+            
+            <div class="card-cart-container">
+                <div class="card-container">
+                    <div v-for = "book in result_filteringBooks" class="card">
+                        <div class="img-container">
+                            <img v-bind:src="book.url" alt="image of book">
+                        </div>
+
+                        <div class="card-text" translate ="no">
+                            <div>
+                                <h3>${book.titre}</h3>
+                                <p> <h5>by ${book.auteur}</h5></p>
+                            </div>
+                            <span>${book.prix}$</span>
+                              
+                        </div>
+
+                            <div class="card-icons">
+                                
+                                <div class ="book-more-details">
+                                    <button @click ="setCurrentBook(book)">
+                                        <i class="fa fa-book-open"></i>
+                                    </button>
+                                </div>
+                                
+                                
+                                <div class="add-to-cart">
+                                    <button v-on:click="addToBasket(book)">
+                                        <i class ="fas fa-shopping-cart"></i>
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Message pas de résultat-->
+
+                    <div v-if ="result_filteringBooks.length ==[]" class="no-result">
+                        <h3> Sorry,</h3>
+                        <p>none of our books seems to match your search</p>
+                    </div>
+
+                    <!--Affichage paniers-->
+                    <transition v-if="show_cart" name ="cart-anim">
+            
+                        <div v-if="basket.length > 0 && show_cart" class="shopping-cart" id="shopping-cart">
+                            <button @click="show_cart = !show_cart" class="btn-modal btn-transit"> X </button>
+                            <h2>My shopping cart</h2>
+
+                            <transition-group name="item-anim" tag ="div" class="item-group">
+
+                                <div v-for="book, id in basket" v-bind:key="basket.indexOf(book)" class="item">
+
+                                    <div class="img-container">
+                                        <img v-bind:src="book.url" alt="">
+                                    </div>
+
+                                    <div class="item-description">
+                                        <h4>${book.titre}</h4>
+                                        <p>${book.prix} $CA</p>
+                                    </div>
+                                    
+                                    <div class="item-quantity">
+                                        <h6>x ${book.quantite}</h6>
+                                    
+                                        <div class="cart-icons">
+
+                                            <button v-on:click="addOne(book)">
+                                                <i class ="fa fa-plus"></i>
+                                            </button>
+
+                                            <button v-on:click="removeOne(book, id)">
+                                                <i class ="fa fa-minus"></i>
+                                            </button>
+        
+                                            <button @click="remove(id)">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </transition-group>
+
+                            <div class="grand-total">
+
+                                <div class="total">
+
+                                    <h3>Amount</h3>
+                                    <h4>${basketTotalAmount} $CA</h4>
+
+                                </div>
+                                <div>
+                                    <h6>Number of items : ${basketTotalBooks}</h6>
+                                </div>
+                            </div>
+                            <div class="order-button">
+                                <button onclick="window.location.href='main#/shopping-cart'">Go to payment</button>
+                            </div>
+                        </div>
+                    </transition>
+                     
+                </div>
+                
+            </div>
+
+        </div>
+
+        </script>
+
+        <script type="text/x-template" id="usersettings">
+        <!--Utilisateur n'est pas connecté-->
+
+        <div v-if ="user_infos.length == []" class="modal-bloc">
+            <div  class="overlay">
+
+            </div>
+
+            <div class ="modal card">
+                
+                <div class="img-container">
+                    <i class="fas fa-hand-paper"></i>
+                </div>
+
+                <div class="modal-book-description">
+                    
+                    <span>
+                        <h2>Sorry,</h2>
+                        <p>You need to login to continue on this page...</p>
+                    </span>
+                    
+                    <div class = "modal-buttons">
+
+                        <button onclick ="history.back()" type="button" class = "btn btn-danger cancel">
+                            Cancel
+                        </button>
+
+                        <a href="{{url_for('login')}}">
+                            
+                            <button type ="button" class="gotoconnect">Go to login</button>
+        
+                        </a>
+
+                    </div> 
+                </div>
+            </div>
+        </div>
+
+    <!--Utilisateur connecté-->
+
+        <div v-if = "user_infos.length > 0" class="u-profile">
+            
+            <div v-for="user in user_infos" class="wrapper">
+                <div class="top-profil">
+                    <div class="img-profil">
+                        <div  class="ch-info">
+                            <i v-on:click="need_change()" class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-profil">
+
+                    <div class="user-infos">
+
+                        <div class="main-infos">
+                            <h3 class="name">${user.firstname} ${user.name}</h3>
+                            <p class="id">ID: ${user.ID}</p>
+                        </div> 
+
+                        <p class="mail">${user.mail}</p>  
+                        <p class="address">
+                            <i class ="fas fa-map-marker-alt"></i>
+                            <span>${user.address}</span>
+                        </p>
+                    </div> 
+
+                    <div class="user-stats">
+
+                        <div class="stat-item">
+                            <p class="stat">10</p>
+                            <p class="grey">Achats <br>effectués</p>
+                        </div> 
+
+                        <div class="stat-item" type="button">
+                            <p class="stat">15</p>
+                            <p class="grey">Livres <br>likés</p>
+                        </div>  
+
+                        <div class="stat-item">
+                            <p class="stat">1</p>
+                            <p class="grey">Commande</p>
+                        </div>  
+
+                    </div> 
+                    <div class="footer-user-profile">
+                        
+                        <button v-on:click="user_logout(user.ID)" type="submit" class="quit-connection">Logout</button>
+                        
+                    </div> 
+                </div>
+            </div>
+
+            <!--Pour la modification de mot de passe-->
+
+            <div v-if="change_needed" v-for="user in user_infos" class= "wrapper2">
+                <h2>Password modification</h2>
+                <input v-model="new_pwd" type="" id="pass_c" placeholder = "Enter the new password" aria-describedby="passHelp">
+                <p v-if= "new_pwd.length < 6" class="text-password-change">${msg_error}</p>
+                <small id="passHelp">
+                    <p>By pushing confirm, your account will be disconnected. <br>
+                       An email will be sent to you to confirm the changes made.</p>
+                </small>
+                <button v-on:click = "change_password(user.ID)" type = "submit">Confirm</button>
+            </div> 
+
+        </div>
+
+
+
+        </script>
+
+        <script type="text/x-template" id="shoppingcart">
+            <main class='checkout-main'>
+                <div v-if="basket.length < 1">
+                    <h1>Your shopping-cart is empty</h1>
+                </div>
+                <div v-if="basket.length > 0" class ="checkout-view">
+                    <h1>My shopping-cart</h1>
+                    <div class="checkout-view-products scrollable-content">
+                        <div v-for="content in basket">
+                            <div  class = "view-product">
+                                <img class="img-p" v-bind:src="content.url" alt="img-product">
+                                <span class="product-infos">
+                                    <p>${content.titre}</p>
+                                </span>
+        
+                                <span class="qty"> 
+                                    <p>x ${content.quantite}</p>
+                                </span>
+        
+                                <span class="price">
+                                    <p>${content.prix} $</p>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <h4>Total amount : ${Total} $CAD</h4>
+                    <div id="paypal-button-container" class="payment"></div>
+                </div>
+            </main>
+        </script>
+
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="https://unpkg.com/vue-cookies@1.8.3/vue-cookies.js"></script>
+        <script src="https://unpkg.com/vue-router@4"></script>
+        <script src="https://www.paypal.com/sdk/js?client-id=AcnBiA97do82jQuqWGCrdHhpBqlS_tpzA2HcS9Q0LkRBT4BUI0mQ2prMY7Aw_HIFAOaf1JmuuVqiVzEw&disable-funding=credit,card&currency=CAD"></script>
+        <script src="{{url_for('static', filename= 'scripts/user.js')}}"></script>
+        <script src="{{url_for('static', filename= 'scripts/script.js')}}"></script>
+    </body>
+
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous">
+
+        <link rel="stylesheet" href="{{url_for ('static',
+            filename='style/login_signin.css')}}">
+        <link rel="stylesheet" href="{{url_for('static',
+            filename="style/admin.css")}}">
+        <link rel="icon" href="{{url_for('static', filename=
+            'images/icon.png')}}" type="image/png" sizes="24x24">
+        <title>Bookstore Administration</title>
+    </head>
+
+    <body>
+        <div id="app">
+            <router-view></router-view>
+        </div>
+
+        <!--Fenêtre principale de l'interface d'administration-->
+        <script id="admin" type="text/x-template">
+
+            <nav v-if="is_authentified" class="navbar navbar-expand-lg navbar-light bg-light">
+                <router-link to='/' class="navbar-brand">Bookstore Administration <span></span></router-link>
+                
+                <div class="collapse navbar-collapse"
+                    id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+
+                        <li class="nav-item active">
+                            <router-link to='/orders' class="nav-link">Orders</router-link>
+                        </li>
+
+                        <li class="nav-item active">
+                            <router-link to='/statistics' class="nav-link ">
+                                <i class="fa fa-line-chart nav-graphic"></i>
+                            </router-link>
+                        </li>
+                        <li class="nav-item active">
+                            <router-link to='books-settings' class="nav-link ">
+                                Books
+                        </router-link>
+                            <div class="dropdown-menu">
+                            </div>
+                        </li>
+                        <li class="nav-item active">
+                            <router-link to='/register-new-admin' class="nav-link">
+                                <i class="fa-solid fa-users-gear nav-graphic"></i>
+                            </router-link>
+                        </li>
+                    </ul>
+                    <form class="form-inline my-2 my-lg-0">
+                        <input v-model="search_keyword" class="form-control mr-sm-4 search-nav" type="search"
+                            placeholder="ISBN, author, title or category" aria-label="Search" required>
+                        <button @click="books_search()" class="btn btn-primary my-1 my-sm-0"
+                            type="submit">Search</button>
+                    </form>
+                </div>
+            </nav>
+            <div class="home-container" v-if= "is_authentified">
+                <h2>Welcome !</h2>
+
+                <div v-for="book in books_result" class="card cat-book">
+                
+                    <img class="card-img" v-bind:src="book.url_img" alt="image-book">
+                
+                    
+                    <div class="card-body text-l">
+                        <h5 class ="card-title">${book.title}</h5>
+                         <h6>by ${book.author}</h6>
+                        <span>
+                            <p>Category : ${book.category} <br>
+                               ISBN: ${book.isbn}
+                            </p>
+                        </span>
+                    </div>
+                    <div class="card-body price">
+                        <h6>${book.price} $</h6>
+                    </div>
+                </div>
+            </div>
+            
+            <!--Authentification administrateur-->
+
+            <div id="body" v-if= "! is_authentified">
+                <div class="card">
+
+                    <img src="{{url_for('static', filename = 'images/logo.png')}}" alt="logo">
+                    <form id='form_login' class="form-container" action="" method='post'>
+                        <h2>
+                            <i class="fa-solid fa-user-gear"></i>
+                        </h2>
+                        <h5>Admin login</h5>
+                        <input v-model="id" id="admin_id" type="text" placeholder="your admin ID"
+                            required autocomplete="off" >
+                        <input v-model="pass" id="password" name="password"  type="password"
+                            placeholder="password" required autocomplete="off" >
+                        <p class="MsgError">${invalid_ids_msg}</p>
+            
+                        <p>Forgot password ? <a href="" @click="get_new_password()" class="text-decoration-none" role="button">Get a new password !</a></p>
+            
+                        <button @click="login()" type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </div>
+            </div>
+        </script>
+
+        <!--Interface de recherche de commandes-->
+        <script id="search_orders" type="text/x-template">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <router-link to='/' class="navbar-brand">Bookstore Administration <span></span></router-link>
+                <router-link to='/' class="navbar-brand return"> <i class = "fa-solid fa-person-walking-arrow-loop-left"></i>
+                </router-link>
+            </nav>
+            <div class="menu">
+                
+                <div v-if="! switch_to_clientID" class = "card menu-i menu-modif-ajout order-info">
+                    <h3>Orders Informations</h3>
+                    <form action="">
+                        <div class ="form-group f-g1 inputs">
+                            <label for="code">Order's code</label>
+                            <input v-model="order_id" id="code" class="form-control" type="text" maxlength="16" placeholder ="Enter Order's code">
+                        </div>
+
+                        <div v-if="was_found" class ="card  f-group">
+
+                            <div class = "form-group f-g2 inputs">
+                                <label for="name">Customer's name</label>
+                                <input v-model="order_infos[0].user_names" id ="name" class= "form-control" type="text" disabled>
+                                <label for="amount">Amount</label>
+                                <input v-model="order_infos[0].amount" id="amount" class="form-control" type="text" disabled>
+                                <label for="order_pass_date">Date of payment of order</label>
+                                <input v-model="order_infos[0].date_of_p" id="order_pass_date" class="form-control" type="text" disabled>
+                            </div>
+
+                            <div class="form-group f-g2 inputs f-g2-r">
+                                <label for="date">Ordered on </label>
+                                <input v-model="order_infos[0].date_of_c" id="date" class="form-control" type="text" disabled>
+                                <label for="status">Order's status</label>
+                                <input v-model="order_infos[0].status" id="status" class="form-control" type="text" disabled>
+                                <label for="update_order">Date of last order status update</label>
+                                <input v-model="order_infos[0].date_of_cs" id="update_order" class="form-control" type="text" disabled>
+                                
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div v-if="was_found" class = "card menu-i order-content">
+                    <h5>Order contents</h5>
+                    <div v-for="content in order_contents" class = "card">
+                        <span class="infos">
+                            <h6>${content.title_by_author}</h6>
+                        </span>
+
+                        <span class="qty"> 
+                            <h6>x ${content.qty}</h6>
+                        </span>
+
+                        <span class="price">
+                            <h6>${content.book_price} CA</h6>
+                        </span>
+
+                    </div>
+                </div>
+                
+            </div>
+        </script>
+
+        <!--Statistiques de la librairie-->
+        <script id="stat" type="text/x-template">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <router-link to='/' class="navbar-brand">Bookstore Administration <span></span></router-link>
+                <router-link to='/' class="navbar-brand return"> <i class = "fa-solid fa-person-walking-arrow-loop-left"></i>
+                </router-link>
+            </nav>
+            <div class="stat-title">
+                <h2>Bookstore statistics</h2>
+            </div>
+            <main class = "stat-main">
+                <div id="stock" class="card stat-submain-1">
+                    <h4>Our stock items</h4>
+
+                    <div class="radio-buttons">
+                        <input v-model="choice_ss" type="radio" id="categ" value="c">
+                        <label for="categ">Each category's existence</label>
+                        <input v-model="choice_ss" type="radio" id="stock_av" value="s" checked>
+                        <label for="stock_av">Stock availability</label>
+                        <input v-model="choice_ss" type="radio" id="year_pub" value="y">
+                        <label for="year_pub">Each year's existence</label>
+                    </div>
+                    
+                    <canvas id="StockGraph" aria-label="chart" role="img" ref="stat_stock"></canvas>
+                
+                </div>
+
+                <div id="sales-div" class="card stat-submain-2">
+                    <h4>Our Sales</h4>
+
+                    <div class="radio-buttons">
+                        <input v-model="choice_sv" type="radio" id="sales_m" value="m" checked>
+                        <label for="sales_m">Total of monthly sales</label>
+                    </div>
+
+                    <canvas id="SalesGraph" aria-label="chart" role="img" ref="stat_sales"></canvas>
+
+                </div>
+
+                <div id="average" class="card stat-submain-3">
+                    <h4>Our average prices</h4>
+                    <div class="radio-buttons">
+                        <input v-model="choice_sa" type="radio" id="sales_m" value="c" checked>
+                        <label for="sales_m">Average per category</label>
+                        <input v-model="choice_sa" type="radio" id="sales_c" value="y" >
+                        <label for="sales_c">Average per year of release</label>
+                    </div>
+                    <canvas id="AverageGraph" aria-label="chart" role="img" ref="stat_average"></canvas>
+                </div>
+
+                <div id="order_status" class="card stat-submain-4">
+                    <h4>Order status</h4>
+                    <div class="radio-buttons"><span></span></div>
+                    <canvas id="OrderGraph" aria-label="chart" role="img" ref="order_status"></canvas>
+                </div>
+            </main>
+        </script>
+
+        <!--Gestion des livres-->
+        <script id="books-settings" type="text/x-template">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <router-link to='/' class="navbar-brand">Bookstore Administration <span></span></router-link>
+                <router-link to='/' class="navbar-brand return"> <i class = "fa-solid fa-person-walking-arrow-loop-left"></i>
+                </router-link>
+            </nav>
+            <div class = "menu">
+
+                <div v-if ="!switch_to_remove"class = "card menu-i menu-modif-ajout">
+                    <h3>Add or modify a book</h3>
+                    <form action="">
+                        <div class ="form-group f-g1 inputs">
+                            <label for="isbn">Book's ISBN</label>
+                            <input v-model="ISBN" id="isbn" class="form-control" type="text" maxlength="13" placeholder ="Enter the ISBN">
+                        </div>
+                        <div class ="card  f-group">
+
+                            <div class = "form-group f-g2 inputs">
+                                <label for="title">Title</label>
+                                <input v-model="title" id ="title" class= "form-control" type="text" placeholder ="Book's title" maxlength="1500">
+                                <label for="year">Year of release</label>
+                                <input v-model="year" id="year" class="form-control" type="number" placeholder ="Year of Book's publication" min="0" max="2023">
+                                <label for="price">Price</label>
+                                <input  v-model="price" id="price" class="form-control" type="number" placeholder = "Set the book's price" min="0.01" step ="0.01">
+                                <label for="url">Book's image's URL</label>
+                                <input v-model="img_URL" class="form-control" type="text" placeholder="The link to book's image" maxlength="3000">
+                                <label for="qty">Quantity</label>
+                                <input v-model="quantity" id="qty" class="form-control" type="number" min="1">
+                            </div>
+
+                            <div class="form-group f-g2 inputs f-g2-r">
+                                <label for="author">Author</label>
+                                <input v-model="author" id ="author" class= "form-control" type="text" placeholder ="Author(s) of book" maxlength="1000">
+                                <label for="editor">Book's editor</label>
+                                <input v-model ="editor" id="editor" class="form-control" type="text" placeholder ="Publisher's name" maxlength="1000">
+                                <label for="category">Book's category</label>
+                                <input v-model="category" id="category" class="form-control" type="text" placeholder = "Enter the book's category" maxlength="1000">
+                                <label for="synopsis">Synopsis</label>
+                                <textarea v-model="synopsis" id="synopsis" class ="form-control" cols="25" rows="3" maxlength="6000"></textarea>
+                            </div>
+                        </div>
+                        <div  class="foot">
+                            <button v-if="ISBN.length == 13" @click="add_or_modify()" type="button" class="btn btn-success">${action}</button>
+                            <button @click="switch_to_remove = !switch_to_remove" type="button" class="btn btn-dark">Switch to remove</button>
+                        </div>
+
+                    </form>
+                </div>
+                
+                <div v-if ="switch_to_remove" class = "card menu-i menu-retrait">
+                    <h3>Remove a book </h3>
+                    <form action="">
+                        <div class ="form-group f-g1 inputs">
+                            <label for="isbn">Book's ISBN</label>
+                            <input v-model="ISBN" id="isbn" class="form-control" type="text" maxlength="13" placeholder ="Enter the ISBN">
+                        </div>
+                        <div v-if ="book_exists" class ="card  f-group">
+
+                            <div class = "form-group f-g2 inputs">
+                                <label for="title">Title</label>
+                                <input v-model="title" id ="title" class= "form-control" type="text" disabled>
+                                <label for="year">Year of release</label>
+                                <input v-model="year" id="year" class="form-control" type="number" disabled>
+                                <label for="price">Price</label>
+                                <input  v-model="price" id="price" class="form-control" type="number" disabled>
+                            </div>
+
+                            <div class="form-group f-g2 inputs">
+                                <label for="author">Author</label>
+                                <input v-model="author" id ="author" class= "form-control" type="text" disabled>
+                                <label for="category">Book's category</label>
+                                <input v-model="category" id="category" class="form-control" type="text" disabled>
+                                <label for="synopsis">Synopsis</label>
+                                <textarea v-model="synopsis" id="synopsis" class ="form-control" cols="25" rows="3" disabled></textarea>
+                            </div>
+
+                        </div>
+                        <div class="foot">
+                            <button v-if ="book_exists" @click="drop_book()" type="button" class="btn btn-danger">Drop it</button>
+                            <button @click="switch_to_remove = !switch_to_remove" type="button" class="btn btn-dark">Switch to add</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </script>
+
+        <!--Ajout d'un nouvel administrateur-->
+        <script id="set_admin" type="text/x-template">
+
+            <!--Enregistrement d'un nouvel administrateur-->
+
+            <div id="body">
+                <div class="card rna">
+                    <img src="{{url_for('static', filename='images/logo.png')}}"
+                        alt="logo">
+                    <form action="" method="post" class="form-container">
+                        <h2>
+                            <i class="fa-solid fa-user-gear"></i>
+                        </h2>
+                        <h5>Register a new administrator</h5>
+                        <div class="input-info">
+                            
+                            <input v-model="name" id="name" class="form-control" name="name"
+                                type="text" required autocomplete="off" placeholder="Enter the name of admin">
+        
+                            <input v-model="first_name" id="firstname" class="form-control" name="firstname"
+                                type="text" placeholder="Enter the firstname of admin">
+
+                            <span>
+                                <p class="MsgError">${mail_error}</p>
+                            </span>
+                            
+                            <input v-model="mail" id="email" class="form-control" name="email"
+                                type="email" placeholder="Enter email" required
+                                autocomplete="off">
+                        </div>
+
+                            <button @click ="register_admin()" type="button" role = "button" class="btn btn-primary">Submit</button> 
+                        
+                    </form>
+                </div>
+            </div>
+
+        </script>
+
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="https://unpkg.com/vue-cookies@1.8.3/vue-cookies.js"></script>
+        <script src="https://unpkg.com/vue-router@4"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+        <script src="{{url_for('static', filename='scripts/admin.js')}}"></script>
+    </body>
+
+</html>

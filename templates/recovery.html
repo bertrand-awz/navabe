@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Navebe Account recovery</title>
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous">
+
+        <link rel="icon" href="{{url_for('static', filename=
+            'images/icon.png')}}" type="image/png" sizes="24x24">
+        <link rel="stylesheet" href="{{url_for ('static',
+            filename='style/login_signin.css')}}">
+
+    </head>
+
+    <body id="body">
+        <div class="card">
+            <img src="{{url_for('static', filename='images/logo.png')}}"
+                alt="logo">
+            <form action="" method="post" class="form-container">
+                <h2>Account recovery</h2>
+                <div class="input-info">
+
+                    <label for="email">Your ID</label>
+                    <input id="email" class="form-control" name="user_id"
+                        type="text" placeholder="Enter your Navabe Bookstore ID" required
+                        autocomplete="off" aria-describedby="emailHelp" maxlength="8">
+                    <p class="MsgError">{{MsgError}}</p>
+                    <small id="emailHelp" class="form-text-text-muted">
+                        <p>Your ID was sent to you after you created your
+                            account.<br> <br>
+                            We will send you a temporary code and instructions
+                            to retrieve <br>
+                            your account to the email address associated with
+                            your ID.</p>
+                    </small>
+                </div>
+
+                <div class="footer-recovery">
+
+                    <a href="{{url_for('main')}}">
+                        <button type="button" class="btn btn-warning"
+                            translate="no">Home page</button>
+                    </a>
+                    <button type="submit" class="btn btn-primary"
+                        translate="no">Submit</button>
+
+                </div>
+            </form>
+        </div>
+    </body>
+
+</html>

@@ -1,0 +1,320 @@
+
+.navbar{
+    position:sticky;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    padding: 15px;
+    padding-right: 45px;
+    background: rgb(255, 255, 255) !important;
+    border-bottom: 2px solid rgba(173, 123, 48, 0.699);
+    z-index: 2;
+}
+.navbar .collapse{
+    margin-left: 15px !important;
+}
+.navbar form{        
+    margin: 25px;
+}
+.navbar form input {
+    background-color: rgba(252, 252, 252, 0.986);
+    
+}
+.nav-graphic{
+    font-size: 18px !important;
+    color: black !important;
+}
+
+.return{
+    position: absolute;
+    right: 0 !important;
+    margin-right: 50px;
+    
+}
+.return i{
+    color: rgba(255, 6, 6, 0.644);
+}
+
+.nav-link{
+    margin: 0px 10px 0px 12px;
+}
+.search-nav{
+    width: 280px !important;
+}
+
+.home-container {
+  display: flex;
+  position: static;
+  flex-direction: column;
+  top: 60px;
+  padding: 45px;
+  align-content: center;
+  align-items: center;
+  flex-grow: 1;
+  overflow: auto;
+  z-index: -1;
+
+}
+.cat-book{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0px;
+    margin: 12px;
+    width: 75%;
+    overflow:hidden;
+    min-width: 400px;
+    height: 150px;
+    gap: 15px;
+    transition: all .4s ease-in-out;
+    border: 1px solid rgba(67, 101, 255, 0.568);
+}
+.cat-book:hover{
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+                rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    border: 2px solid rgba(139, 150, 252, 0.911);
+}
+
+.card-img{
+    height: 150px !important;
+    width: 105px !important;
+    background-color: brown;
+}
+
+.text-l{
+    height: 100%;
+    width: 80% !important;
+    max-width: 100%;
+    background-color: rgb(255, 255, 255);
+}
+.price{
+    display: flex;
+    align-items: center;
+    background-color: aqua;
+    height: 100%;
+    text-align: center;
+}
+
+.menu {
+    position: static;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 20px;
+    display: grid;
+    grid-gap: 50px;
+    align-items: center;
+    justify-items: center;
+    background-color: rgba(7, 0, 12, 0.021);
+
+}
+
+
+.menu .menu-i {
+    cursor: default;
+    padding-top: 50px;
+    display: flex;
+    height: 97vh;
+    width: 45vw;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    overflow: hidden;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px, 
+                rgba(17, 17, 26, 0.1) 0px 16px 56px,
+                rgba(17, 17, 26, 0.1) 0px 24px 80px;
+}
+.menu .order-info{
+    height: auto !important;
+}
+.menu .order-content{
+    padding-top:35px ;
+    height: auto !important;
+    gap: 5px;
+    align-items: center;
+    align-content: flex-start;
+}
+.menu .order-content h5{
+   margin-bottom: 10px; 
+}
+.menu .order-content .card{
+    margin-top: 5px;
+    height: 45px !important;
+    width: 100%;
+    border: 2px solid rgba(226, 226, 250, 0.664);
+    padding: 0px;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+.menu .order-content .card .infos{
+    text-align: center;
+    margin: 3px;
+    padding: 5px;
+    height: 100%;
+    width: 70%;
+}
+.menu .order-content .card .infos h6{
+    margin: 0;
+    padding: 0;
+}
+.menu .order-content .card .qty{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: rgba(0, 17, 255, 0.233);
+    height: 100%;
+    width: 15%;
+    border-left: 1px solid rgba(0, 0, 0, 0.425);
+}
+.menu .order-content .card .price{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: rgba(255, 136, 0, 0.233);
+    height: 100%;
+    width: 15%;
+    border-left: 1px solid rgba(0, 0, 0, 0.425);
+}
+
+.menu .menu-i form {
+    margin-top: 15px;
+    display: flex;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    overflow: hidden;
+    gap: 2px;
+}
+.menu .menu-i form .f-g1{
+    max-width: 180px;
+}
+.f-group {
+
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width:  100%!important;
+    gap: 20px;
+    align-items: center;
+    align-content: center;
+    padding-right: 15px;
+    border: 0;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+.inputs input {
+    width: 120%;
+    margin-bottom: 12px;
+    border: solid 2px rgba(86, 86, 206, 0.432);
+    transition: all .4s ease-in-out;
+    overflow-x:auto!important;
+
+}
+.f-group textarea{
+    border: solid 2px rgba(86, 86, 206, 0.432);
+    transition: all .4s ease-in-out;
+}
+.f-group textarea:hover {
+    background: rgba(206, 206, 255, 0.459);
+    border: solid 2px rgba(86, 86, 206, 0.603);
+}
+
+.inputs input:hover{
+    border: 2px solid rgba(86, 86, 206, 0.603);
+}
+.f-group textarea {
+    margin-right: 0;
+}
+.f-g1 input {
+    min-width: 150px;
+}
+.f-g2{
+    margin-top: 0;
+    margin: 5%;
+    height: 100%;
+}
+
+.foot {
+    padding: 0;
+    margin-top:5px ;
+    margin-bottom:4px;
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-around;
+    align-items: center;
+    
+}
+
+/*Partie Stat*/
+.stat-title {
+    position:static;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    margin:0;
+    background-color: rgba(0, 0, 0, 0.041);
+    padding: 15px;
+}
+.stat-main{
+    position:relative sticky;
+    top: 0;
+    right:0;
+    left: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.041);
+    grid-gap: 10px;
+    padding: 10px 40px 10px 40px;
+}
+.stat-main .card{
+    background-color: rgb(255, 255, 255);
+    border-radius: 7px;
+    transition: all .4s ease-in-out;
+    padding-top: 25px;
+    height: 500px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+.stat-main .card .radio-buttons{
+    margin-bottom: 15px;
+}
+.stat-main .card .radio-buttons input{ 
+    padding: 5px;
+    transition: all .4s ease-in-out;
+}
+.stat-main .card .radio-buttons input:hover{
+    background: rgba(115, 115, 255, 0.349);
+    border: 2px solid rgba(48, 179, 255, 0.452);
+}
+.stat-main .card .radio-buttons label{
+    margin: 5px;
+    margin-right: 15px;
+}
+.stat-main .stat-submain-1 #stat-stock {
+    display: flex;
+    width: 100%;
+    height: 90%;
+    background-color: black;
+}
+
+.stat-main .card:hover{
+    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+}
+
+@media(max-width:900px) {
+    .stat-main{
+        display: flex;
+        flex-direction: column;
+    }
+}

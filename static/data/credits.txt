@@ -1,0 +1,14 @@
+Le fichier csv ("NVB.csv") ayant permis la mise à pied de la BDD de notre site provient de la compilation des fichiers:
+
+1.https://www.kaggle.com/datasets/dylanjcastillo/7k-books-with-metadata?resource=download 
+2.
+
+Merci aux auteurs: 1. Dylan Castillo
+                   2.
+
+                    ****************
+                    ** DISCLAIMER **
+                    ****************
+
+Les prix ayant été TOUS générés aléatoirement dans le cadre de ce projet, 
+il est fort probable qu'ils ne reflètent aucunement la réalité. Ne vous y fiez pas.
